@@ -42,6 +42,10 @@ namespace Krungsri.DataAccess.Repositories
         public MerchantTransactionAccess GetMerchantTransactionById(int id)
         {
             return _context.merchantTransactions.FirstOrDefault(x=>x.Id == id);
-        }       
+        }
+        public List<MerchantTransactionAccess> GetMerchantsMonthly()
+        {            
+            return _context.merchantTransactions.Where(x => x.CreateDateTime > DateTime.Now.AddDays(-30) && x.CreateDateTime <= DateTime.Now).ToList();
+        }
     }
 }

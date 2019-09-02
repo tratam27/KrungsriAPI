@@ -12,5 +12,6 @@ namespace Krungsri.DataAccess.Interfaces
         void Update(AdminAccess user);
         void Delete(AdminAccess user);
         AdminAccess GetAdminById(int id);
+        AdminAccess GetAdminByUserName(string username);
     }
 }

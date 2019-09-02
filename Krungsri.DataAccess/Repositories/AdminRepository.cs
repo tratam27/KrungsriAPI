@@ -40,7 +40,11 @@ namespace Krungsri.DataAccess.Repositories
         }
         public AdminAccess GetAdminById(int id)
         {
-            return _context.admins.FirstOrDefault(x=>x.AdminId == id);
+            return _context.admins.FirstOrDefault(x => x.AdminId == id);
+        }
+        public AdminAccess GetAdminByUserName(string username)
+        {
+            return _context.admins.FirstOrDefault(x => x.UserName == username);
         }
     }
 }

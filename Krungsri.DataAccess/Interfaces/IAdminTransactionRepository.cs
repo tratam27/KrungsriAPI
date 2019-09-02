@@ -12,5 +12,7 @@ namespace Krungsri.DataAccess.Interfaces
         void Update(AdminTransactionAccess user);
         void Delete(AdminTransactionAccess user);
         AdminTransactionAccess GetAdminTransactionById(int id);
+        List<AdminTransactionAccess> GetAdminsMonthly(int adminId);
+        AdminTransactionAccess GetAdminTransactionByRef(string reference);
     }
 }

@@ -18,7 +18,7 @@ namespace Krungsri.DataAccess.Models
         public string Salt { get; set; }
         public string PhoneNumber { get; set; }
         public TokenAccess Token { get; set; }
-        public ICollection<AdminTransactionAccess> AdminTransactions { get; set; }
+        //public ICollection<AdminTransactionAccess> AdminTransactions { get; set; }
         public ICollection<MerchantTransactionAccess> MerchantTransactions { get; set; }
         public ICollection<OtpAccess> Otps { get; set; }
     }

@@ -17,7 +17,7 @@ namespace Krungsri.DataAccess.Configurations
             builder.Property(e => e.MoneyAmount);
             builder.Property(e => e.Ref);
             builder.HasOne(e => e.Admin).WithMany(b => b.AdminTransactions).HasForeignKey(e => e.AdminId);
-            builder.HasOne(e => e.User).WithMany(b => b.AdminTransactions).HasForeignKey(e => e.UserId);
+            //builder.HasOne(e => e.User).WithMany(b => b.AdminTransactions).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
             builder.Property(e => e.CreateDateTime).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
             builder.Property(e => e.UpdateDateTime).HasDefaultValueSql("GETDATE()").ValueGeneratedOnUpdate();
         }

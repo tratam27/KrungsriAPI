@@ -15,29 +15,24 @@ namespace Krungsri.DataAccess.Repositories
         {
             _context = context;
         }
-
         public void Create(AdminTokenAccess user)
         {
             _context.Add(user);
             _context.SaveChanges();
         }
-
         public void Delete(AdminTokenAccess user)
         {
             _context.Remove(user);
             _context.SaveChanges();
         }
-
         public AdminTokenAccess Get()
         {
             return _context.adminTokens.Find();
         }
-
         public AdminTokenAccess GetAdminTokenById(int id)
         {
-            return _context.adminTokens.FirstOrDefault(x=>x.Id == id);
+            return _context.adminTokens.FirstOrDefault(x => x.AdminId == id);
         }
-
         public void Update(AdminTokenAccess user)
         {
             _context.Update(user);

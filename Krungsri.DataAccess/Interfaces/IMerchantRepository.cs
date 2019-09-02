@@ -12,5 +12,6 @@ namespace Krungsri.DataAccess.Interfaces
         void Update(MerchantAccess user);
         void Delete(MerchantAccess user);
         MerchantAccess GetMerchantById(int id);
+        MerchantAccess GetMerchantByUserName(string username);
     }
 }

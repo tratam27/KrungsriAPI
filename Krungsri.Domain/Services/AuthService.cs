@@ -19,12 +19,20 @@ namespace Krungsri.Domain.Services
         private readonly IConfiguration _config;
         private readonly ITokenRepository _tokenRepository;
         private readonly IOtpRepository _otpRepository;
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITokenRepository tokenRepository, IOtpRepository otpRepository)
+        private readonly IMerchantRepository _merchantRepository;
+        private readonly IMerchantTokenRepository _merchantTokenRepository;
+        private readonly IAdminRepository _adminRepository;
+        private readonly IAdminTokenRepository _adminTokenRepository;
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITokenRepository tokenRepository, IOtpRepository otpRepository, IMerchantRepository merchantRepository, IMerchantTokenRepository merchantTokenRepository, IAdminRepository adminRepository, IAdminTokenRepository adminTokenRepository)
         {
             _userRepository = userRepository;
             _config = configuration;
             _tokenRepository = tokenRepository;
             _otpRepository = otpRepository;
+            _merchantRepository = merchantRepository;
+            _merchantTokenRepository = merchantTokenRepository;
+            _adminRepository = adminRepository;
+            _adminTokenRepository = adminTokenRepository;
         }
         public UserLoginDto AuthenticateUser(UserLoginDto login)
         {
@@ -44,26 +52,64 @@ namespace Krungsri.Domain.Services
                 return null;
             }
         }
-        public bool Register(UserDto user)
+        public MerchantLoginDto AuthenticateMerchant(MerchantLoginDto login)
+        {
+            try
+            {
+                MerchantLoginDto user = null;
+                var getUser = _merchantRepository.GetMerchantByUserName(login.UserName);
+                var hashedPassword = HashPassword(login.Password, getUser.Salt);
+                if (login.UserName == getUser.UserName && hashedPassword == getUser.Password)
+                {
+                    user = new MerchantLoginDto { UserName = getUser.UserName, Password = hashedPassword };
+                }
+                return user;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public AdminLoginDto AuthenticateAdmin(AdminLoginDto login)
+        {
+            try
+            {
+                AdminLoginDto user = null;
+                var getUser = _adminRepository.GetAdminByUserName(login.UserName);
+                var hashedPassword = HashPassword(login.Password, getUser.Salt);
+                if (login.UserName == getUser.UserName && hashedPassword == getUser.Password)
+                {
+                    user = new AdminLoginDto { UserName = getUser.UserName, Password = hashedPassword };
+                }
+                return user;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public UserAccess Register(UserDto user)
         {
             if (!IsValidEmail(user.Email))
             {
-                return false;
+                return null;
             }
             var checkuser = _userRepository.GetUserByEmail(user.Email);
             if(checkuser != null)
             {
-                return false;
+                return null;
             }
 
             var salt = GenerateSalt();
+            string[] birth = user.Birthdate.Split("/");
+            var convertDate = new DateTime(Int32.Parse(birth[2]), Int32.Parse(birth[1]), Int32.Parse(birth[0]));
 
             UserAccess userDb = new UserAccess()
             {
-                Balance = 0.00m,
-                Birthdate = user.Birthdate,
+                Balance = user.Balance,
+                Birthdate = convertDate,
                 Email = user.Email,
-                BookBank = GenerateBookBank(),
+                BookBank = user.BookBank,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Gender = user.Gender,
@@ -72,7 +118,8 @@ namespace Krungsri.Domain.Services
                 PhoneNumber = user.PhoneNumber,                
             };
             _userRepository.Create(userDb);
-            return true;
+            var getuser = _userRepository.GetUserByEmail(userDb.Email);
+            return getuser;
         }
         public string GenerateBookBank()
         {
@@ -112,7 +159,7 @@ namespace Krungsri.Domain.Services
             var stringOTP = new String(OTP);
             return stringOTP;
         }
-        public string SendOtpEmail(string email)
+        public OtpAccess SendOtpEmail(string email)
         {
             var Otp = GenerateOTP();
             var Ref = GenerateSixReference();
@@ -134,7 +181,7 @@ namespace Krungsri.Domain.Services
                 Ref = Ref
             };
             _otpRepository.Create(otpAccess);
-            return Otp;
+            return otpAccess;
         }
         public bool CheckOtp(string email, string otp)
         {            
@@ -275,6 +322,42 @@ namespace Krungsri.Domain.Services
             }
             return tokenDto.RefreshToken;
         }
+        public string SaveRefreshTokenMerchant(MerchantTokenDto merchantToken)
+        {
+            MerchantTokenAccess tokenAccess = new MerchantTokenAccess()
+            {
+                MerchantId = merchantToken.MerchantId,
+                RefreshToken = merchantToken.RefreshToken
+            };
+            var checkuser = _merchantTokenRepository.GetMerchantTokenById(merchantToken.MerchantId);
+            if (checkuser == null)
+            {
+                _merchantTokenRepository.Create(tokenAccess);
+            }
+            else
+            {
+                _merchantTokenRepository.Update(tokenAccess);
+            }
+            return merchantToken.RefreshToken;
+        }
+        public string SaveRefreshTokenAdmin(AdminTokenDto adminToken)
+        {
+            AdminTokenAccess tokenAccess = new AdminTokenAccess()
+            {
+                AdminId = adminToken.AdminId,
+                RefreshToken = adminToken.RefreshToken
+            };
+            var checkuser = _adminTokenRepository.GetAdminTokenById(adminToken.AdminId);
+            if (checkuser == null)
+            {
+                _adminTokenRepository.Create(tokenAccess);
+            }
+            else
+            {
+                _adminTokenRepository.Update(tokenAccess);
+            }
+            return adminToken.RefreshToken;
+        }
         public UserLoginDto GetUserLoginDto(string email)
         {
             var accessuser = _userRepository.GetUserByEmail(email);
@@ -286,6 +369,34 @@ namespace Krungsri.Domain.Services
             {                
                 Email = accessuser.Email,
                 UserId = accessuser.UserId
+            };
+            return user;
+        }
+        public MerchantLoginDto GetMerchantLoginDto(string username)
+        {
+            var accessuser = _merchantRepository.GetMerchantByUserName(username);
+            if (accessuser == null)
+            {
+                return null;
+            }
+            MerchantLoginDto user = new MerchantLoginDto()
+            {
+                UserName = accessuser.UserName,
+                MerchantId = accessuser.MerchantId,
+            };
+            return user;
+        }
+        public AdminLoginDto GetAdminLoginDto(string username)
+        {
+            var accessuser = _adminRepository.GetAdminByUserName(username);
+            if (accessuser == null)
+            {
+                return null;
+            }
+            AdminLoginDto user = new AdminLoginDto()
+            {
+                UserName = accessuser.UserName,
+                AdminId = accessuser.AdminId,
             };
             return user;
         }

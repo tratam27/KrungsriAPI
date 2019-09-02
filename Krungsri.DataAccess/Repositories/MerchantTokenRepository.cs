@@ -35,7 +35,7 @@ namespace Krungsri.DataAccess.Repositories
 
         public MerchantTokenAccess GetMerchantTokenById(int id)
         {
-            return _context.merchantTokens.FirstOrDefault(x => x.Id == id);
+            return _context.merchantTokens.FirstOrDefault(x => x.MerchantId == id);
         }
 
         public void Update(MerchantTokenAccess user)

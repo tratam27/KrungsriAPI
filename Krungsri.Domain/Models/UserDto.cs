@@ -11,7 +11,7 @@ namespace Krungsri.Domain.Models
         public string Email { get; set; }
         public string LastName { get; set; }
         public string Gender { get; set; }
-        public DateTime Birthdate { get; set; }
+        public string Birthdate { get; set; }
         public decimal Balance { get; set; }
         public string BookBank { get; set; }
         public string Password { get; set; }

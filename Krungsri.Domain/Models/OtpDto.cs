@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Krungsri.API.Models
+namespace Krungsri.Domain.Models
 {
-    public class SendOtpModel
+    public class OtpDto
     {
         public string Email { get; set; }
         public string Otp { get; set; }
-
+        public string Ref { get; set; }
+        
     }
 }

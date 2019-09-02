@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Krungsri.DataAccess.Context;
 using Krungsri.DataAccess.Interfaces;
 using Krungsri.DataAccess.Repositories;
 using Krungsri.Domain.Interfaces;
 using Krungsri.Domain.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Krungsri.API
 {
@@ -32,29 +35,37 @@ namespace Krungsri.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddScoped<IAuthService, AuthService>();            
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAdminTransactionService, AdminTransactionService>();
+            services.AddScoped<IMerchantTransactionService, MerchantTransactionService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IAdminTokenRepository, AdminTokenRepository>();
+            services.AddScoped<IAdminTransactionRepository, AdminTransactionRepository>();
+            services.AddScoped<IMerchantRepository, MerchantRepository>();
+            services.AddScoped<IMerchantTokenRepository, MerchantTokenRepository>();
+            services.AddScoped<IMerchantTransactionRepository, MerchantTransactionRepository>();
             //services.AddDbContext<KrungsriContext>();
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddDbContext<KrungsriContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("MyConnection"));
             });
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //.AddJwtBearer(options =>
-            //{
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = true,
-            //        ValidateAudience = true,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        ValidIssuer = Configuration["Jwt:Issuer"],
-            //        ValidAudience = Configuration["Jwt:Issuer"],
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-            //    };
-            //});
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,7 +80,7 @@ namespace Krungsri.API
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

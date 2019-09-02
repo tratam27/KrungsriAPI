@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace Krungsri.API.Models
 {
-    public class SendOtpModel
+    public class MerchantLoginModel
     {
-        public string Email { get; set; }
-        public string Otp { get; set; }
-
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 }

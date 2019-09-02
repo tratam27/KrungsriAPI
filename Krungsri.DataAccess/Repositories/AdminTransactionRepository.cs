@@ -37,11 +37,18 @@ namespace Krungsri.DataAccess.Repositories
         {
             return _context.adminTransactions.FirstOrDefault(x=>x.Id == id);
         }
-
         public void Update(AdminTransactionAccess user)
         {
             _context.Update(user);
             _context.SaveChanges();
+        }
+        public List<AdminTransactionAccess> GetAdminsMonthly(int adminId)
+        {
+            return _context.adminTransactions.Where(x => x.CreateDateTime > DateTime.Now.AddDays(-30) && x.CreateDateTime <= DateTime.Now && x.AdminId == adminId && x.UserId != 0).ToList();
+        }
+        public AdminTransactionAccess GetAdminTransactionByRef(string reference)
+        {
+            return _context.adminTransactions.FirstOrDefault(x => x.Ref == reference);
         }
     }
 }

@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace Krungsri.API.Models
 {
-    public class SendOtpModel
+    public class AdminTranMonthlyModel
     {
-        public string Email { get; set; }
-        public string Otp { get; set; }
-
+        public int AdminId { get; set; }
     }
 }

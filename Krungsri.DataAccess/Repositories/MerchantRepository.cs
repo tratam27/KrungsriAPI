@@ -42,5 +42,9 @@ namespace Krungsri.DataAccess.Repositories
             _context.Update(user);
             _context.SaveChanges();
         }
+        public MerchantAccess GetMerchantByUserName(string username)
+        {
+            return _context.merchants.FirstOrDefault(x => x.UserName == username);
+        }
     }
 }
